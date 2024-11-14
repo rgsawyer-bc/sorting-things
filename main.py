@@ -1,7 +1,5 @@
-from sorts.allSorts import *
-from visualizers.allVisualizers import *
-
-from PIL import *
+from sorts.new import *
+from visualizers.new import *
 
 from datetime import datetime
 
@@ -13,13 +11,8 @@ l = [i for i in range(1, 501)]
 
 shuffle(l)
 
-b = MergeSort(l, 10)
-
-time1 = datetime.now()
-print(b.current())
-time2 = datetime.now()
-print(time2 - time1)
+b = BubbleSort(l, 500)
 
 #img = DisparityDots(b).generateImage(1920, 1080)
 
-DisparityDots(b).generateVideo(1920, 1080)
+StandardBar(b).generateVideo(1920, 1080)

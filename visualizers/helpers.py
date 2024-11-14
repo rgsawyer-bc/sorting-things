@@ -50,16 +50,18 @@ class Visualizer():
         )
 
 
-    def generateVideo(self, width, height):
+    def generateVideo(self, width = 1920, height = 1440):
         framelist = []
         audioClips = []
         time = 0
-        while self.algorithm.sorted == False:
+
+        self.sort()
+        for current in self.data:
             #val = self.algorithm.current().accessed()[-1].val
             #audioClips.append(sound(getPitch(val)).set_start(time))
             #time += .016
 
-            framelist.append(self.generateImage(width, height))
+            framelist.append(self.generateImage(current, width, height))
             self.algorithm.update()
         framelist.append(self.generateImage(width, height))
 
