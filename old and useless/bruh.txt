@@ -1,0 +1,157 @@
+        elif self.state == 1:
+            self.index += 1
+            current = self.lifted
+            print(self.index)
+            print(self.bottomSwitch, self.topSwitch)
+            print(self.liftedIndex, current)
+
+            if current.digit(len(current) - self.digit) == 0:
+                self.lifted = self.sorting[self.bottomSwitch]
+                self.sorting[self.liftedIndex] = Elem(0)
+
+                self.sorting[self.bottomSwitch] = current
+                self.bottomSwitch += 1
+                self.countZero += 1
+                if self.lifted == Elem(0):
+                    print('yay')
+                    self.lifted = self.sorting[self.bottomSwitch]
+                    self.liftedIndex = self.bottomSwitch
+                    self.sorting[self.bottomSwitch] = Elem(0)
+
+            else:
+                self.lifted = self.sorting[self.topSwitch]
+                self.sorting[self.liftedIndex] = Elem(0)
+
+                self.sorting[self.topSwitch] = current
+                self.topSwitch -= 1
+                if self.lifted == Elem(0):
+                    print('yay')
+                    self.lifted = self.sorting[self.bottomSwitch]
+                    self.liftedIndex = self.bottomSwitch
+                    self.sorting[self.bottomSwitch] = Elem(0)
+
+            if self.index in [i-1 for i in self.splits]: #if topswitch - 1 == bottomswitch
+                self.sorting[self.liftedIndex] = self.lifted
+
+                splitIndex = [i-1 for i in self.splits].index(self.index)
+
+                split = self.index + 1
+
+                next = self.splits[splitIndex + 1]
+
+                print('HEY H EY ', next, splitIndex, self.splits)
+
+                self.bottomSwitch = split
+                self.topSwitch = next - 1
+
+                self.splits.insert(self.insertIndex, self.splits[splitIndex - 1] + self.countZero)
+                self.insertIndex += 2
+                self.countZero = 0
+
+            if self.index == self.length - 1:
+                self.index = -1
+                self.insertIndex = 1
+                self.bottomSwitch = 0
+                self.topSwitch = self.splits[1] - 1
+                self.digit -= 1
+
+                self.lifted = self.sorting[self.bottomSwitch]
+                self.liftedIndex = self.bottomSwitch
+
+                if self.digit == -1:
+                    self.sorted = True
+
+
+    def step(self):
+        if self.state == 0:
+            self.index += 1
+            current = self.sorting[self.index]
+            current = current.toBinary()
+            self.sorting[self.index] = current
+            self.maxdigits = max([len(str(current)), self.maxdigits])
+
+            if self.index == self.length - 1:
+                self.index = -1
+                self.state = 1
+                self.digit = self.maxdigits
+
+                self.lift(0)
+
+
+        elif self.state == 1:
+            print(self.bottomSwitch, self.topSwitch)
+            if self.bottomSwitch < self.length:
+                if self.lifted.digit(len(self.lifted) - self.digit) == 0:
+                    print(self.bottomSwitch)
+                    self.place(self.bottomSwitch)
+                else:
+                    self.place(self.topSwitch)
+
+            if self.bottomSwitch == self.topSwitch:
+                try:
+                    self.addSplit(self.topSwitch + 1 - self.lifted.digit(len(self.lifted) - self.digit))
+                    print(a.bottomSwitch, a.topSwitch)
+
+                    self.sorting[self.topSwitch] = self.lifted
+                    self.lift(self.topSwitch)
+
+
+    def lift(self, index):
+        if index >= self.length or index < 0:
+            return None
+        print(index)
+        self.lifted = self.sorting[index]
+        self.sorting[index] = Elem(0)
+
+
+    def place(self, index):
+        print(index, self.length)
+        if index >= self.length or index < 0:
+            return None
+
+        if self.sorting[index] == Elem(0):
+            self.sorting[index] = self.lifted
+            
+            if index == self.bottomSwitch: # bottomSwitch
+                self.bottomSwitch += 1
+                self.lift(self.bottomSwitch)
+            else:
+                self.topSwitch -= 1
+                self.lift(self.topSwitch)
+
+        else:
+            current = self.lifted
+            self.lift(index)
+            self.sorting[index] = current
+
+            if index == self.bottomSwitch:
+                self.bottomSwitch += 1
+            if index == self.topSwitch:
+                self.topSwitch -= 1
+
+
+    def addSplit(self, split):
+        self.splits.insert(self.splitIndex, split)
+        self.splitIndex += 2
+
+        self.bottomSwitch = self.nextBottom(split)
+        self.topSwitch = self.nextTop(split)
+
+
+    def nextBottom(self, split):
+        splitIndex = self.splits.index(split)
+        print(splitIndex)
+        print(self.splits)
+        return(self.splits[splitIndex + 1])
+    
+
+    def nextTop(self, split):
+        splitIndex = self.splits.index(split)
+        return(self.splits[splitIndex + 2] - 1)
+    
+
+    def reset(self):
+        self.lift(0)
+        self.bottomSwitch = 0
+        self.topSwitch = self.splits[1] - 1
+        self.splitIndex = 1

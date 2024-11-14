@@ -3,8 +3,6 @@ if __name__ == "__main__":
 else:
     from .sort import Sort
 
-# you can exclude checking the last element since it's guaranteed to make it all the way up
-
 
 class bubbleSort(Sort):
     def __init__(self, unsorted, speed):

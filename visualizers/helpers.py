@@ -1,10 +1,7 @@
-from PIL import Image, ImageDraw, ImageFont
+from math import sin, pi
+import numpy as np
 import moviepy.editor as mpe
 import moviepy.audio.AudioClip as ac
-import moviepy.audio.fx.all as all
-import numpy as np
-
-from math import sin, pi
 
 def red(x, width = 1920):
     return(
@@ -26,7 +23,7 @@ def rgb(i, width):
 
 def getPitch(i):
     return(
-        2**(.01*i) + 500
+        500 + 1.5*i
     )
 
 def make_frame(t, freq=440):
@@ -36,29 +33,21 @@ def make_frame(t, freq=440):
     return np.array([left_channel, right_channel]).T
 
 def sound(freq):
-    clip = ac.AudioClip(lambda t: make_frame(t, freq = freq), duration=.016)
+    clip = ac.AudioClip(lambda t: make_frame(t, freq = freq), duration=.008)
     newclip = clip.volumex(.05)
     return(newclip)
 
-class standardBar():
+
+class Visualizer():
     def __init__(self, algorithm):
         self.algorithm = algorithm
 
-    def generateImage(self, width, height):
-        buffer = int(width/15)
-        img = Image.new( mode = "RGB", size = (width, height) )
-        draw = ImageDraw.Draw(img, 'RGBA')
 
-        for i in range(length := len(self.algorithm.sorting)):
-
-            val = self.algorithm.sorting.list[i].val
-            increment = (width - 2*buffer)/length
-            draw.rectangle(
-                [(x:= increment*i - increment/2 + buffer, height - val),
-                    (x+increment, height)],
-                    fill = (255, 255, 255) if self.algorithm.sorting.list[i] in self.algorithm.accessed() else rgb(val, length)
-                )
-        return(img)
+    def distance(self, val, i): # normalized
+        shift = self.algorithm.length / 2
+        return(
+            (1/shift) * abs(abs(val - i + 1) - shift)
+        )
 
 
     def generateVideo(self, width, height):
@@ -66,21 +55,19 @@ class standardBar():
         audioClips = []
         time = 0
         while self.algorithm.sorted == False:
-            val = self.algorithm.accessed()[-1].val
-            audioClips.append(sound(getPitch(val)).set_start(time))
-            time += .016
+            #val = self.algorithm.current().accessed()[-1].val
+            #audioClips.append(sound(getPitch(val)).set_start(time))
+            #time += .016
 
             framelist.append(self.generateImage(width, height))
             self.algorithm.update()
         framelist.append(self.generateImage(width, height))
 
-        audioClips = ac.CompositeAudioClip(audioClips)
-        #audioClips = ac.CompositeAudioClip([sound(400), sound(500)])
+        #audioClips = ac.CompositeAudioClip(audioClips)
 
         print(len(framelist))
 
         clips = [mpe.ImageClip(np.array(img)).set_duration(.016) for img in framelist]
         video = mpe.concatenate_videoclips(clips)
-        newvideo = video.set_audio(audioClips)
-        #newvideo = video.set_audio(sound(440).set_start(.016))
-        newvideo.write_videofile("output_video.mp4", fps=60)
+        #newvideo = video.set_audio(audioClips)
+        video.write_videofile(f"videos/{self.algorithm.name}-{self.algorithm.length}-{self.algorithm.speed}.mp4", fps=60)

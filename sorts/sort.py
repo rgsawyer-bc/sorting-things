@@ -8,6 +8,7 @@ class Sort():
         self.sorting = List(unsorted)
         self.sorted = False
         self.speed = speed
+        self.length = len(unsorted)
         
 
     def comparisons(self):
@@ -19,7 +20,8 @@ class Sort():
     
 
     def accessed(self):
-        return self.sorting.recentlyAccessed
+        return []
+        #return self.sorting.recentlyAccessed
     
 
     def accessedInt(self):
