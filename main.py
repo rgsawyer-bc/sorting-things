@@ -7,12 +7,14 @@ from datetime import datetime
 
 from random import shuffle
 
-l = [i for i in range(1, 501)]
+l = [i for i in range(1, 1001)]
 
 shuffle(l)
 
-b = BubbleSort(l, 500)
+b = QuickSort(l, 10)
 
 #img = DisparityDots(b).generateImage(1920, 1080)
+boosh = Image.open("visualizers/boosh kirby.png")
+smallBoosh = boosh.resize((20, 20))
 
-StandardBar(b).generateVideo(1920, 1080)
+DisparityDots(b).generateVideo(1920, 1080)

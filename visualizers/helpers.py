@@ -33,7 +33,7 @@ def make_frame(t, freq=440):
     return np.array([left_channel, right_channel]).T
 
 def sound(freq):
-    clip = ac.AudioClip(lambda t: make_frame(t, freq = freq), duration=.008)
+    clip = ac.AudioClip(lambda t: make_frame(t, freq = freq), duration=.016)
     newclip = clip.volumex(.05)
     return(newclip)
 
